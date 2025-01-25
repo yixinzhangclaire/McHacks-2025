@@ -2,11 +2,18 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 
+import java.util.*;
 
-// line 56 "model.ump"
-// line 130 "model.ump"
+// line 55 "model.ump"
+// line 140 "model.ump"
 public abstract class Employee extends User
 {
+
+  //------------------------
+  // STATIC VARIABLES
+  //------------------------
+
+  private static Map<Integer, Employee> employeesByEmployeeID = new HashMap<Integer, Employee>();
 
   //------------------------
   // MEMBER VARIABLES
@@ -22,7 +29,10 @@ public abstract class Employee extends User
   public Employee(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, int aEmployeeID)
   {
     super(aEmail, aPassword, aIFEM, aPerson);
-    employeeID = aEmployeeID;
+    if (!setEmployeeID(aEmployeeID))
+    {
+      throw new RuntimeException("Cannot create due to duplicate employeeID. See https://manual.umple.org?RE003ViolationofUniqueness.html");
+    }
   }
 
   //------------------------
@@ -32,8 +42,19 @@ public abstract class Employee extends User
   public boolean setEmployeeID(int aEmployeeID)
   {
     boolean wasSet = false;
+    Integer anOldEmployeeID = getEmployeeID();
+    if (anOldEmployeeID != null && anOldEmployeeID.equals(aEmployeeID)) {
+      return true;
+    }
+    if (hasWithEmployeeID(aEmployeeID)) {
+      return wasSet;
+    }
     employeeID = aEmployeeID;
     wasSet = true;
+    if (anOldEmployeeID != null) {
+      employeesByEmployeeID.remove(anOldEmployeeID);
+    }
+    employeesByEmployeeID.put(aEmployeeID, this);
     return wasSet;
   }
 
@@ -41,9 +62,20 @@ public abstract class Employee extends User
   {
     return employeeID;
   }
+  /* Code from template attribute_GetUnique */
+  public static Employee getWithEmployeeID(int aEmployeeID)
+  {
+    return employeesByEmployeeID.get(aEmployeeID);
+  }
+  /* Code from template attribute_HasUnique */
+  public static boolean hasWithEmployeeID(int aEmployeeID)
+  {
+    return getWithEmployeeID(aEmployeeID) != null;
+  }
 
   public void delete()
   {
+    employeesByEmployeeID.remove(getEmployeeID());
     super.delete();
   }
 

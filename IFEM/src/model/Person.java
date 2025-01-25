@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 66 "model.ump"
-// line 140 "model.ump"
+// line 65 "model.ump"
+// line 150 "model.ump"
 public class Person
 {
 

@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 50 "model.ump"
-// line 125 "model.ump"
+// line 49 "model.ump"
+// line 135 "model.ump"
 public class Nurse extends Employee
 {
 

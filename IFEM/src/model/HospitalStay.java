@@ -5,8 +5,8 @@
 import java.sql.Time;
 import java.util.*;
 
-// line 24 "model.ump"
-// line 114 "model.ump"
+// line 23 "model.ump"
+// line 124 "model.ump"
 public class HospitalStay
 {
 
@@ -24,11 +24,10 @@ public class HospitalStay
   //HospitalStay Attributes
   private Time arrivalTime;
   private Time avgWaitTime;
-  private int queuePosition;
   private Phase phase;
 
   //HospitalStay Associations
-  private IFEM iFEM;
+  private List<Queue> queues;
   private List<AssessmentNurse> assessmentNurses;
   private List<AssessmentDoc> assessmentDocs;
 
@@ -36,17 +35,12 @@ public class HospitalStay
   // CONSTRUCTOR
   //------------------------
 
-  public HospitalStay(Time aArrivalTime, Phase aPhase, IFEM aIFEM)
+  public HospitalStay(Time aArrivalTime, Phase aPhase)
   {
     arrivalTime = aArrivalTime;
     avgWaitTime = null;
-    queuePosition = 0;
     phase = aPhase;
-    boolean didAddIFEM = setIFEM(aIFEM);
-    if (!didAddIFEM)
-    {
-      throw new RuntimeException("Unable to create hospitalStay due to iFEM. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
+    queues = new ArrayList<Queue>();
     assessmentNurses = new ArrayList<AssessmentNurse>();
     assessmentDocs = new ArrayList<AssessmentDoc>();
   }
@@ -71,14 +65,6 @@ public class HospitalStay
     return wasSet;
   }
 
-  public boolean setQueuePosition(int aQueuePosition)
-  {
-    boolean wasSet = false;
-    queuePosition = aQueuePosition;
-    wasSet = true;
-    return wasSet;
-  }
-
   public boolean setPhase(Phase aPhase)
   {
     boolean wasSet = false;
@@ -97,19 +83,39 @@ public class HospitalStay
     return avgWaitTime;
   }
 
-  public int getQueuePosition()
-  {
-    return queuePosition;
-  }
-
   public Phase getPhase()
   {
     return phase;
   }
-  /* Code from template association_GetOne */
-  public IFEM getIFEM()
+  /* Code from template association_GetMany */
+  public Queue getQueue(int index)
   {
-    return iFEM;
+    Queue aQueue = queues.get(index);
+    return aQueue;
+  }
+
+  public List<Queue> getQueues()
+  {
+    List<Queue> newQueues = Collections.unmodifiableList(queues);
+    return newQueues;
+  }
+
+  public int numberOfQueues()
+  {
+    int number = queues.size();
+    return number;
+  }
+
+  public boolean hasQueues()
+  {
+    boolean has = queues.size() > 0;
+    return has;
+  }
+
+  public int indexOfQueue(Queue aQueue)
+  {
+    int index = queues.indexOf(aQueue);
+    return index;
   }
   /* Code from template association_GetMany */
   public AssessmentNurse getAssessmentNurse(int index)
@@ -171,24 +177,138 @@ public class HospitalStay
     int index = assessmentDocs.indexOf(aAssessmentDoc);
     return index;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setIFEM(IFEM aIFEM)
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfQueues()
+  {
+    return 0;
+  }
+  /* Code from template association_MaximumNumberOfMethod */
+  public static int maximumNumberOfQueues()
+  {
+    return 2;
+  }
+  /* Code from template association_AddManyToManyMethod */
+  public boolean addQueue(Queue aQueue)
+  {
+    boolean wasAdded = false;
+    if (queues.contains(aQueue)) { return false; }
+    if (numberOfQueues() >= maximumNumberOfQueues())
+    {
+      return wasAdded;
+    }
+
+    queues.add(aQueue);
+    if (aQueue.indexOfHospitalStay(this) != -1)
+    {
+      wasAdded = true;
+    }
+    else
+    {
+      wasAdded = aQueue.addHospitalStay(this);
+      if (!wasAdded)
+      {
+        queues.remove(aQueue);
+      }
+    }
+    return wasAdded;
+  }
+  /* Code from template association_RemoveMany */
+  public boolean removeQueue(Queue aQueue)
+  {
+    boolean wasRemoved = false;
+    if (!queues.contains(aQueue))
+    {
+      return wasRemoved;
+    }
+
+    int oldIndex = queues.indexOf(aQueue);
+    queues.remove(oldIndex);
+    if (aQueue.indexOfHospitalStay(this) == -1)
+    {
+      wasRemoved = true;
+    }
+    else
+    {
+      wasRemoved = aQueue.removeHospitalStay(this);
+      if (!wasRemoved)
+      {
+        queues.add(oldIndex,aQueue);
+      }
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_SetOptionalNToMany */
+  public boolean setQueues(Queue... newQueues)
   {
     boolean wasSet = false;
-    if (aIFEM == null)
+    ArrayList<Queue> verifiedQueues = new ArrayList<Queue>();
+    for (Queue aQueue : newQueues)
+    {
+      if (verifiedQueues.contains(aQueue))
+      {
+        continue;
+      }
+      verifiedQueues.add(aQueue);
+    }
+
+    if (verifiedQueues.size() != newQueues.length || verifiedQueues.size() > maximumNumberOfQueues())
     {
       return wasSet;
     }
 
-    IFEM existingIFEM = iFEM;
-    iFEM = aIFEM;
-    if (existingIFEM != null && !existingIFEM.equals(aIFEM))
+    ArrayList<Queue> oldQueues = new ArrayList<Queue>(queues);
+    queues.clear();
+    for (Queue aNewQueue : verifiedQueues)
     {
-      existingIFEM.removeHospitalStay(this);
+      queues.add(aNewQueue);
+      if (oldQueues.contains(aNewQueue))
+      {
+        oldQueues.remove(aNewQueue);
+      }
+      else
+      {
+        aNewQueue.addHospitalStay(this);
+      }
     }
-    iFEM.addHospitalStay(this);
+
+    for (Queue anOldQueue : oldQueues)
+    {
+      anOldQueue.removeHospitalStay(this);
+    }
     wasSet = true;
     return wasSet;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addQueueAt(Queue aQueue, int index)
+  {  
+    boolean wasAdded = false;
+    if(addQueue(aQueue))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfQueues()) { index = numberOfQueues() - 1; }
+      queues.remove(aQueue);
+      queues.add(index, aQueue);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveQueueAt(Queue aQueue, int index)
+  {
+    boolean wasAdded = false;
+    if(queues.contains(aQueue))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfQueues()) { index = numberOfQueues() - 1; }
+      queues.remove(aQueue);
+      queues.add(index, aQueue);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addQueueAt(aQueue, index);
+    }
+    return wasAdded;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfAssessmentNurses()
@@ -337,11 +457,11 @@ public class HospitalStay
 
   public void delete()
   {
-    IFEM placeholderIFEM = iFEM;
-    this.iFEM = null;
-    if(placeholderIFEM != null)
+    ArrayList<Queue> copyOfQueues = new ArrayList<Queue>(queues);
+    queues.clear();
+    for(Queue aQueue : copyOfQueues)
     {
-      placeholderIFEM.removeHospitalStay(this);
+      aQueue.removeHospitalStay(this);
     }
     for(int i=assessmentNurses.size(); i > 0; i--)
     {
@@ -358,11 +478,9 @@ public class HospitalStay
 
   public String toString()
   {
-    return super.toString() + "["+
-            "queuePosition" + ":" + getQueuePosition()+ "]" + System.getProperties().getProperty("line.separator") +
+    return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "arrivalTime" + "=" + (getArrivalTime() != null ? !getArrivalTime().equals(this)  ? getArrivalTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "avgWaitTime" + "=" + (getAvgWaitTime() != null ? !getAvgWaitTime().equals(this)  ? getAvgWaitTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "phase" + "=" + (getPhase() != null ? !getPhase().equals(this)  ? getPhase().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "iFEM = "+(getIFEM()!=null?Integer.toHexString(System.identityHashCode(getIFEM())):"null");
+            "  " + "phase" + "=" + (getPhase() != null ? !getPhase().equals(this)  ? getPhase().toString().replaceAll("  ","    ") : "this" : "null");
   }
 }

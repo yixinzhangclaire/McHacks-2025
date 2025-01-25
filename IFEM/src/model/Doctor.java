@@ -2,9 +2,10 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 
+import java.util.*;
 
-// line 42 "model.ump"
-// line 119 "model.ump"
+// line 41 "model.ump"
+// line 129 "model.ump"
 public class Doctor extends Employee
 {
 

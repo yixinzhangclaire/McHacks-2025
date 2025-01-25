@@ -2,9 +2,10 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 
+import java.util.*;
 
-// line 95 "model.ump"
-// line 168 "model.ump"
+// line 99 "model.ump"
+// line 178 "model.ump"
 public class MedicalRecord
 {
 

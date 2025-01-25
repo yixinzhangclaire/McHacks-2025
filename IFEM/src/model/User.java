@@ -2,11 +2,18 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 
+import java.util.*;
 
-// line 60 "model.ump"
-// line 135 "model.ump"
+// line 59 "model.ump"
+// line 145 "model.ump"
 public abstract class User
 {
+
+  //------------------------
+  // STATIC VARIABLES
+  //------------------------
+
+  private static Map<String, User> usersByEmail = new HashMap<String, User>();
 
   //------------------------
   // MEMBER VARIABLES
@@ -26,8 +33,11 @@ public abstract class User
 
   public User(String aEmail, String aPassword, IFEM aIFEM, Person aPerson)
   {
-    email = aEmail;
     password = aPassword;
+    if (!setEmail(aEmail))
+    {
+      throw new RuntimeException("Cannot create due to duplicate email. See https://manual.umple.org?RE003ViolationofUniqueness.html");
+    }
     boolean didAddIFEM = setIFEM(aIFEM);
     if (!didAddIFEM)
     {
@@ -47,8 +57,19 @@ public abstract class User
   public boolean setEmail(String aEmail)
   {
     boolean wasSet = false;
+    String anOldEmail = getEmail();
+    if (anOldEmail != null && anOldEmail.equals(aEmail)) {
+      return true;
+    }
+    if (hasWithEmail(aEmail)) {
+      return wasSet;
+    }
     email = aEmail;
     wasSet = true;
+    if (anOldEmail != null) {
+      usersByEmail.remove(anOldEmail);
+    }
+    usersByEmail.put(aEmail, this);
     return wasSet;
   }
 
@@ -63,6 +84,16 @@ public abstract class User
   public String getEmail()
   {
     return email;
+  }
+  /* Code from template attribute_GetUnique */
+  public static User getWithEmail(String aEmail)
+  {
+    return usersByEmail.get(aEmail);
+  }
+  /* Code from template attribute_HasUnique */
+  public static boolean hasWithEmail(String aEmail)
+  {
+    return getWithEmail(aEmail) != null;
   }
 
   public String getPassword()
@@ -120,6 +151,7 @@ public abstract class User
 
   public void delete()
   {
+    usersByEmail.remove(getEmail());
     IFEM placeholderIFEM = iFEM;
     this.iFEM = null;
     if(placeholderIFEM != null)
