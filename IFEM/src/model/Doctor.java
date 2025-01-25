@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 41 "model.ump"
-// line 129 "model.ump"
+// line 45 "model.ump"
+// line 135 "model.ump"
 public class Doctor extends Employee
 {
 
@@ -20,9 +20,9 @@ public class Doctor extends Employee
   // CONSTRUCTOR
   //------------------------
 
-  public Doctor(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, int aEmployeeID, AssessmentDoc aAssessmentDoc)
+  public Doctor(String aEmail, String aPassword, IFEMs aIFEMs, Person aPerson, int aEmployeeID, AssessmentDoc aAssessmentDoc)
   {
-    super(aEmail, aPassword, aIFEM, aPerson, aEmployeeID);
+    super(aEmail, aPassword, aIFEMs, aPerson, aEmployeeID);
     if (aAssessmentDoc == null || aAssessmentDoc.getDoctor() != null)
     {
       throw new RuntimeException("Unable to create Doctor due to aAssessmentDoc. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
@@ -30,10 +30,10 @@ public class Doctor extends Employee
     assessmentDoc = aAssessmentDoc;
   }
 
-  public Doctor(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, int aEmployeeID, String aDescriptionForAssessmentDoc, HospitalStay aHospitalStayForAssessmentDoc)
+  public Doctor(String aEmail, String aPassword, IFEMs aIFEMs, Person aPerson, int aEmployeeID, String aDescriptionForAssessmentDoc, HospitalStay aHospitalStayForAssessmentDoc, IFEMs aIFEMsForAssessmentDoc)
   {
-    super(aEmail, aPassword, aIFEM, aPerson, aEmployeeID);
-    assessmentDoc = new AssessmentDoc(aDescriptionForAssessmentDoc, aHospitalStayForAssessmentDoc, this);
+    super(aEmail, aPassword, aIFEMs, aPerson, aEmployeeID);
+    assessmentDoc = new AssessmentDoc(aDescriptionForAssessmentDoc, aHospitalStayForAssessmentDoc, this, aIFEMsForAssessmentDoc);
   }
 
   //------------------------

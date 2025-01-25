@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 55 "model.ump"
-// line 140 "model.ump"
+// line 59 "model.ump"
+// line 146 "model.ump"
 public abstract class Employee extends User
 {
 
@@ -26,9 +26,9 @@ public abstract class Employee extends User
   // CONSTRUCTOR
   //------------------------
 
-  public Employee(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, int aEmployeeID)
+  public Employee(String aEmail, String aPassword, IFEMs aIFEMs, Person aPerson, int aEmployeeID)
   {
-    super(aEmail, aPassword, aIFEM, aPerson);
+    super(aEmail, aPassword, aIFEMs, aPerson);
     if (!setEmployeeID(aEmployeeID))
     {
       throw new RuntimeException("Cannot create due to duplicate employeeID. See https://manual.umple.org?RE003ViolationofUniqueness.html");

@@ -3,8 +3,8 @@
 
 
 
-// line 30 "model.ump"
-// line 188 "model.ump"
+// line 34 "model.ump"
+// line 194 "model.ump"
 public class AssessmentNurse
 {
 
@@ -24,12 +24,13 @@ public class AssessmentNurse
   //AssessmentNurse Associations
   private Nurse nurse;
   private HospitalStay hospitalStay;
+  private IFEMs iFEMs;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public AssessmentNurse(Triage aTriage, Nurse aNurse, HospitalStay aHospitalStay)
+  public AssessmentNurse(Triage aTriage, Nurse aNurse, HospitalStay aHospitalStay, IFEMs aIFEMs)
   {
     triage = aTriage;
     boolean didAddNurse = setNurse(aNurse);
@@ -41,6 +42,11 @@ public class AssessmentNurse
     if (!didAddHospitalStay)
     {
       throw new RuntimeException("Unable to create assessmentNurse due to hospitalStay. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    boolean didAddIFEMs = setIFEMs(aIFEMs);
+    if (!didAddIFEMs)
+    {
+      throw new RuntimeException("Unable to create assessmentNurse due to iFEMs. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -69,6 +75,11 @@ public class AssessmentNurse
   public HospitalStay getHospitalStay()
   {
     return hospitalStay;
+  }
+  /* Code from template association_GetOne */
+  public IFEMs getIFEMs()
+  {
+    return iFEMs;
   }
   /* Code from template association_SetOneToMany */
   public boolean setNurse(Nurse aNurse)
@@ -108,6 +119,25 @@ public class AssessmentNurse
     wasSet = true;
     return wasSet;
   }
+  /* Code from template association_SetOneToMany */
+  public boolean setIFEMs(IFEMs aIFEMs)
+  {
+    boolean wasSet = false;
+    if (aIFEMs == null)
+    {
+      return wasSet;
+    }
+
+    IFEMs existingIFEMs = iFEMs;
+    iFEMs = aIFEMs;
+    if (existingIFEMs != null && !existingIFEMs.equals(aIFEMs))
+    {
+      existingIFEMs.removeAssessmentNurse(this);
+    }
+    iFEMs.addAssessmentNurse(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
@@ -123,6 +153,12 @@ public class AssessmentNurse
     {
       placeholderHospitalStay.removeAssessmentNurse(this);
     }
+    IFEMs placeholderIFEMs = iFEMs;
+    this.iFEMs = null;
+    if(placeholderIFEMs != null)
+    {
+      placeholderIFEMs.removeAssessmentNurse(this);
+    }
   }
 
 
@@ -131,6 +167,7 @@ public class AssessmentNurse
     return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "triage" + "=" + (getTriage() != null ? !getTriage().equals(this)  ? getTriage().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "nurse = "+(getNurse()!=null?Integer.toHexString(System.identityHashCode(getNurse())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "hospitalStay = "+(getHospitalStay()!=null?Integer.toHexString(System.identityHashCode(getHospitalStay())):"null");
+            "  " + "hospitalStay = "+(getHospitalStay()!=null?Integer.toHexString(System.identityHashCode(getHospitalStay())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "iFEMs = "+(getIFEMs()!=null?Integer.toHexString(System.identityHashCode(getIFEMs())):"null");
   }
 }

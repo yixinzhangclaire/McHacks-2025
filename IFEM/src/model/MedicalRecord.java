@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 99 "model.ump"
-// line 178 "model.ump"
+// line 103 "model.ump"
+// line 184 "model.ump"
 public class MedicalRecord
 {
 
@@ -29,9 +29,9 @@ public class MedicalRecord
     patient = aPatient;
   }
 
-  public MedicalRecord(String aEmailForPatient, String aPasswordForPatient, IFEM aIFEMForPatient, Person aPersonForPatient, String aIdForPatient)
+  public MedicalRecord(String aEmailForPatient, String aPasswordForPatient, IFEMs aIFEMsForPatient, Person aPersonForPatient, String aIdForPatient)
   {
-    patient = new Patient(aEmailForPatient, aPasswordForPatient, aIFEMForPatient, aPersonForPatient, aIdForPatient, this);
+    patient = new Patient(aEmailForPatient, aPasswordForPatient, aIFEMsForPatient, aPersonForPatient, aIdForPatient, this);
   }
 
   //------------------------

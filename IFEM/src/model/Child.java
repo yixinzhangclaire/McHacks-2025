@@ -3,11 +3,18 @@
 
 
 import java.util.*;
+import java.sql.Time;
 
-// line 113 "model.ump"
-// line 210 "model.ump"
+// line 117 "model.ump"
+// line 217 "model.ump"
 public class Child
 {
+
+  //------------------------
+  // ENUMERATIONS
+  //------------------------
+
+  public enum Phase { Registered, Triaged, InvestigationPending, Ordered, Pending, Reported }
 
   //------------------------
   // MEMBER VARIABLES
@@ -18,6 +25,7 @@ public class Child
 
   //Child Associations
   private List<Patient> patients;
+  private List<HospitalStay> hospitalStaies;
 
   //------------------------
   // CONSTRUCTOR
@@ -32,6 +40,7 @@ public class Child
     {
       throw new RuntimeException("Unable to create Child, must have at least 1 patients. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
+    hospitalStaies = new ArrayList<HospitalStay>();
   }
 
   //------------------------
@@ -78,6 +87,36 @@ public class Child
   public int indexOfPatient(Patient aPatient)
   {
     int index = patients.indexOf(aPatient);
+    return index;
+  }
+  /* Code from template association_GetMany */
+  public HospitalStay getHospitalStay(int index)
+  {
+    HospitalStay aHospitalStay = hospitalStaies.get(index);
+    return aHospitalStay;
+  }
+
+  public List<HospitalStay> getHospitalStaies()
+  {
+    List<HospitalStay> newHospitalStaies = Collections.unmodifiableList(hospitalStaies);
+    return newHospitalStaies;
+  }
+
+  public int numberOfHospitalStaies()
+  {
+    int number = hospitalStaies.size();
+    return number;
+  }
+
+  public boolean hasHospitalStaies()
+  {
+    boolean has = hospitalStaies.size() > 0;
+    return has;
+  }
+
+  public int indexOfHospitalStay(HospitalStay aHospitalStay)
+  {
+    int index = hospitalStaies.indexOf(aHospitalStay);
     return index;
   }
   /* Code from template association_IsNumberOfValidMethod */
@@ -214,6 +253,78 @@ public class Child
     }
     return wasAdded;
   }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfHospitalStaies()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public HospitalStay addHospitalStay(Time aArrivalTime, Phase aPhase, Patient aPatient, IFEMs aIFEMs)
+  {
+    return new HospitalStay(aArrivalTime, aPhase, aPatient, aIFEMs, this);
+  }
+
+  public boolean addHospitalStay(HospitalStay aHospitalStay)
+  {
+    boolean wasAdded = false;
+    if (hospitalStaies.contains(aHospitalStay)) { return false; }
+    Child existingChild = aHospitalStay.getChild();
+    boolean isNewChild = existingChild != null && !this.equals(existingChild);
+    if (isNewChild)
+    {
+      aHospitalStay.setChild(this);
+    }
+    else
+    {
+      hospitalStaies.add(aHospitalStay);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeHospitalStay(HospitalStay aHospitalStay)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aHospitalStay, as it must always have a child
+    if (!this.equals(aHospitalStay.getChild()))
+    {
+      hospitalStaies.remove(aHospitalStay);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addHospitalStayAt(HospitalStay aHospitalStay, int index)
+  {  
+    boolean wasAdded = false;
+    if(addHospitalStay(aHospitalStay))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfHospitalStaies()) { index = numberOfHospitalStaies() - 1; }
+      hospitalStaies.remove(aHospitalStay);
+      hospitalStaies.add(index, aHospitalStay);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveHospitalStayAt(HospitalStay aHospitalStay, int index)
+  {
+    boolean wasAdded = false;
+    if(hospitalStaies.contains(aHospitalStay))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfHospitalStaies()) { index = numberOfHospitalStaies() - 1; }
+      hospitalStaies.remove(aHospitalStay);
+      hospitalStaies.add(index, aHospitalStay);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addHospitalStayAt(aHospitalStay, index);
+    }
+    return wasAdded;
+  }
 
   public void delete()
   {
@@ -222,6 +333,11 @@ public class Child
     for(Patient aPatient : copyOfPatients)
     {
       aPatient.removeChild(this);
+    }
+    for(int i=hospitalStaies.size(); i > 0; i--)
+    {
+      HospitalStay aHospitalStay = hospitalStaies.get(i - 1);
+      aHospitalStay.delete();
     }
   }
 

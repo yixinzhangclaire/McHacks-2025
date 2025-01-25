@@ -3,11 +3,18 @@
 
 
 import java.util.*;
+import java.sql.Time;
 
-// line 8 "model.ump"
-// line 119 "model.ump"
+// line 11 "model.ump"
+// line 124 "model.ump"
 public class Patient extends User
 {
+
+  //------------------------
+  // ENUMERATIONS
+  //------------------------
+
+  public enum Phase { Registered, Triaged, InvestigationPending, Ordered, Pending, Reported }
 
   //------------------------
   // STATIC VARIABLES
@@ -23,6 +30,7 @@ public class Patient extends User
   private String id;
 
   //Patient Associations
+  private List<HospitalStay> hospitalStaies;
   private MedicalRecord medicalRecord;
   private List<Child> children;
 
@@ -30,13 +38,14 @@ public class Patient extends User
   // CONSTRUCTOR
   //------------------------
 
-  public Patient(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, String aId, MedicalRecord aMedicalRecord)
+  public Patient(String aEmail, String aPassword, IFEMs aIFEMs, Person aPerson, String aId, MedicalRecord aMedicalRecord)
   {
-    super(aEmail, aPassword, aIFEM, aPerson);
+    super(aEmail, aPassword, aIFEMs, aPerson);
     if (!setId(aId))
     {
       throw new RuntimeException("Cannot create due to duplicate id. See https://manual.umple.org?RE003ViolationofUniqueness.html");
     }
+    hospitalStaies = new ArrayList<HospitalStay>();
     if (aMedicalRecord == null || aMedicalRecord.getPatient() != null)
     {
       throw new RuntimeException("Unable to create Patient due to aMedicalRecord. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
@@ -45,13 +54,14 @@ public class Patient extends User
     children = new ArrayList<Child>();
   }
 
-  public Patient(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, String aId)
+  public Patient(String aEmail, String aPassword, IFEMs aIFEMs, Person aPerson, String aId)
   {
-    super(aEmail, aPassword, aIFEM, aPerson);
+    super(aEmail, aPassword, aIFEMs, aPerson);
     if (!setId(aId))
     {
       throw new RuntimeException("Cannot create due to duplicate id. See https://manual.umple.org?RE003ViolationofUniqueness.html");
     }
+    hospitalStaies = new ArrayList<HospitalStay>();
     medicalRecord = new MedicalRecord(this);
     children = new ArrayList<Child>();
   }
@@ -93,6 +103,36 @@ public class Patient extends User
   {
     return getWithId(aId) != null;
   }
+  /* Code from template association_GetMany */
+  public HospitalStay getHospitalStay(int index)
+  {
+    HospitalStay aHospitalStay = hospitalStaies.get(index);
+    return aHospitalStay;
+  }
+
+  public List<HospitalStay> getHospitalStaies()
+  {
+    List<HospitalStay> newHospitalStaies = Collections.unmodifiableList(hospitalStaies);
+    return newHospitalStaies;
+  }
+
+  public int numberOfHospitalStaies()
+  {
+    int number = hospitalStaies.size();
+    return number;
+  }
+
+  public boolean hasHospitalStaies()
+  {
+    boolean has = hospitalStaies.size() > 0;
+    return has;
+  }
+
+  public int indexOfHospitalStay(HospitalStay aHospitalStay)
+  {
+    int index = hospitalStaies.indexOf(aHospitalStay);
+    return index;
+  }
   /* Code from template association_GetOne */
   public MedicalRecord getMedicalRecord()
   {
@@ -127,6 +167,78 @@ public class Patient extends User
   {
     int index = children.indexOf(aChild);
     return index;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfHospitalStaies()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public HospitalStay addHospitalStay(Time aArrivalTime, Phase aPhase, IFEMs aIFEMs, Child aChild)
+  {
+    return new HospitalStay(aArrivalTime, aPhase, this, aIFEMs, aChild);
+  }
+
+  public boolean addHospitalStay(HospitalStay aHospitalStay)
+  {
+    boolean wasAdded = false;
+    if (hospitalStaies.contains(aHospitalStay)) { return false; }
+    Patient existingPatient = aHospitalStay.getPatient();
+    boolean isNewPatient = existingPatient != null && !this.equals(existingPatient);
+    if (isNewPatient)
+    {
+      aHospitalStay.setPatient(this);
+    }
+    else
+    {
+      hospitalStaies.add(aHospitalStay);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeHospitalStay(HospitalStay aHospitalStay)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aHospitalStay, as it must always have a patient
+    if (!this.equals(aHospitalStay.getPatient()))
+    {
+      hospitalStaies.remove(aHospitalStay);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addHospitalStayAt(HospitalStay aHospitalStay, int index)
+  {  
+    boolean wasAdded = false;
+    if(addHospitalStay(aHospitalStay))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfHospitalStaies()) { index = numberOfHospitalStaies() - 1; }
+      hospitalStaies.remove(aHospitalStay);
+      hospitalStaies.add(index, aHospitalStay);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveHospitalStayAt(HospitalStay aHospitalStay, int index)
+  {
+    boolean wasAdded = false;
+    if(hospitalStaies.contains(aHospitalStay))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfHospitalStaies()) { index = numberOfHospitalStaies() - 1; }
+      hospitalStaies.remove(aHospitalStay);
+      hospitalStaies.add(index, aHospitalStay);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addHospitalStayAt(aHospitalStay, index);
+    }
+    return wasAdded;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfChildren()
@@ -214,6 +326,11 @@ public class Patient extends User
   public void delete()
   {
     patientsById.remove(getId());
+    for(int i=hospitalStaies.size(); i > 0; i--)
+    {
+      HospitalStay aHospitalStay = hospitalStaies.get(i - 1);
+      aHospitalStay.delete();
+    }
     MedicalRecord existingMedicalRecord = medicalRecord;
     medicalRecord = null;
     if (existingMedicalRecord != null)

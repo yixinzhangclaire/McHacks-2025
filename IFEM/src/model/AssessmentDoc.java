@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 71 "model.ump"
-// line 157 "model.ump"
+// line 75 "model.ump"
+// line 163 "model.ump"
 public class AssessmentDoc
 {
 
@@ -21,12 +21,13 @@ public class AssessmentDoc
   private Doctor doctor;
   private TreatmentPlan treatmentPlan;
   private List<Test> tests;
+  private IFEMs iFEMs;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public AssessmentDoc(String aDescription, HospitalStay aHospitalStay, Doctor aDoctor)
+  public AssessmentDoc(String aDescription, HospitalStay aHospitalStay, Doctor aDoctor, IFEMs aIFEMs)
   {
     description = aDescription;
     boolean didAddHospitalStay = setHospitalStay(aHospitalStay);
@@ -40,9 +41,14 @@ public class AssessmentDoc
     }
     doctor = aDoctor;
     tests = new ArrayList<Test>();
+    boolean didAddIFEMs = setIFEMs(aIFEMs);
+    if (!didAddIFEMs)
+    {
+      throw new RuntimeException("Unable to create assessmentDoc due to iFEMs. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
   }
 
-  public AssessmentDoc(String aDescription, HospitalStay aHospitalStay, String aEmailForDoctor, String aPasswordForDoctor, IFEM aIFEMForDoctor, Person aPersonForDoctor, int aEmployeeIDForDoctor)
+  public AssessmentDoc(String aDescription, HospitalStay aHospitalStay, String aEmailForDoctor, String aPasswordForDoctor, IFEMs aIFEMsForDoctor, Person aPersonForDoctor, int aEmployeeIDForDoctor, IFEMs aIFEMs)
   {
     description = aDescription;
     boolean didAddHospitalStay = setHospitalStay(aHospitalStay);
@@ -50,8 +56,13 @@ public class AssessmentDoc
     {
       throw new RuntimeException("Unable to create assessmentDoc due to hospitalStay. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    doctor = new Doctor(aEmailForDoctor, aPasswordForDoctor, aIFEMForDoctor, aPersonForDoctor, aEmployeeIDForDoctor, this);
+    doctor = new Doctor(aEmailForDoctor, aPasswordForDoctor, aIFEMsForDoctor, aPersonForDoctor, aEmployeeIDForDoctor, this);
     tests = new ArrayList<Test>();
+    boolean didAddIFEMs = setIFEMs(aIFEMs);
+    if (!didAddIFEMs)
+    {
+      throw new RuntimeException("Unable to create assessmentDoc due to iFEMs. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
   }
 
   //------------------------
@@ -120,6 +131,11 @@ public class AssessmentDoc
   {
     int index = tests.indexOf(aTest);
     return index;
+  }
+  /* Code from template association_GetOne */
+  public IFEMs getIFEMs()
+  {
+    return iFEMs;
   }
   /* Code from template association_SetOneToMany */
   public boolean setHospitalStay(HospitalStay aHospitalStay)
@@ -239,6 +255,25 @@ public class AssessmentDoc
     }
     return wasAdded;
   }
+  /* Code from template association_SetOneToMany */
+  public boolean setIFEMs(IFEMs aIFEMs)
+  {
+    boolean wasSet = false;
+    if (aIFEMs == null)
+    {
+      return wasSet;
+    }
+
+    IFEMs existingIFEMs = iFEMs;
+    iFEMs = aIFEMs;
+    if (existingIFEMs != null && !existingIFEMs.equals(aIFEMs))
+    {
+      existingIFEMs.removeAssessmentDoc(this);
+    }
+    iFEMs.addAssessmentDoc(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
@@ -266,6 +301,12 @@ public class AssessmentDoc
     {
       aTest.removeAssessmentDoc(this);
     }
+    IFEMs placeholderIFEMs = iFEMs;
+    this.iFEMs = null;
+    if(placeholderIFEMs != null)
+    {
+      placeholderIFEMs.removeAssessmentDoc(this);
+    }
   }
 
 
@@ -275,6 +316,7 @@ public class AssessmentDoc
             "description" + ":" + getDescription()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "hospitalStay = "+(getHospitalStay()!=null?Integer.toHexString(System.identityHashCode(getHospitalStay())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "doctor = "+(getDoctor()!=null?Integer.toHexString(System.identityHashCode(getDoctor())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "treatmentPlan = "+(getTreatmentPlan()!=null?Integer.toHexString(System.identityHashCode(getTreatmentPlan())):"null");
+            "  " + "treatmentPlan = "+(getTreatmentPlan()!=null?Integer.toHexString(System.identityHashCode(getTreatmentPlan())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "iFEMs = "+(getIFEMs()!=null?Integer.toHexString(System.identityHashCode(getIFEMs())):"null");
   }
 }

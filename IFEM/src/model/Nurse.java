@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 49 "model.ump"
-// line 135 "model.ump"
+// line 53 "model.ump"
+// line 141 "model.ump"
 public class Nurse extends Employee
 {
 
@@ -26,9 +26,9 @@ public class Nurse extends Employee
   // CONSTRUCTOR
   //------------------------
 
-  public Nurse(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, int aEmployeeID)
+  public Nurse(String aEmail, String aPassword, IFEMs aIFEMs, Person aPerson, int aEmployeeID)
   {
-    super(aEmail, aPassword, aIFEM, aPerson, aEmployeeID);
+    super(aEmail, aPassword, aIFEMs, aPerson, aEmployeeID);
     assessmentNurses = new ArrayList<AssessmentNurse>();
   }
 
@@ -71,9 +71,9 @@ public class Nurse extends Employee
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public AssessmentNurse addAssessmentNurse(Triage aTriage, HospitalStay aHospitalStay)
+  public AssessmentNurse addAssessmentNurse(Triage aTriage, HospitalStay aHospitalStay, IFEMs aIFEMs)
   {
-    return new AssessmentNurse(aTriage, this, aHospitalStay);
+    return new AssessmentNurse(aTriage, this, aHospitalStay, aIFEMs);
   }
 
   public boolean addAssessmentNurse(AssessmentNurse aAssessmentNurse)

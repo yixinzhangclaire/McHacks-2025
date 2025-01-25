@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 59 "model.ump"
-// line 145 "model.ump"
+// line 63 "model.ump"
+// line 151 "model.ump"
 public abstract class User
 {
 
@@ -24,24 +24,24 @@ public abstract class User
   private String password;
 
   //User Associations
-  private IFEM iFEM;
+  private IFEMs iFEMs;
   private Person person;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public User(String aEmail, String aPassword, IFEM aIFEM, Person aPerson)
+  public User(String aEmail, String aPassword, IFEMs aIFEMs, Person aPerson)
   {
     password = aPassword;
     if (!setEmail(aEmail))
     {
       throw new RuntimeException("Cannot create due to duplicate email. See https://manual.umple.org?RE003ViolationofUniqueness.html");
     }
-    boolean didAddIFEM = setIFEM(aIFEM);
-    if (!didAddIFEM)
+    boolean didAddIFEMs = setIFEMs(aIFEMs);
+    if (!didAddIFEMs)
     {
-      throw new RuntimeException("Unable to create user due to iFEM. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create user due to iFEMs. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     boolean didAddPerson = setPerson(aPerson);
     if (!didAddPerson)
@@ -101,9 +101,9 @@ public abstract class User
     return password;
   }
   /* Code from template association_GetOne */
-  public IFEM getIFEM()
+  public IFEMs getIFEMs()
   {
-    return iFEM;
+    return iFEMs;
   }
   /* Code from template association_GetOne */
   public Person getPerson()
@@ -111,21 +111,21 @@ public abstract class User
     return person;
   }
   /* Code from template association_SetOneToMany */
-  public boolean setIFEM(IFEM aIFEM)
+  public boolean setIFEMs(IFEMs aIFEMs)
   {
     boolean wasSet = false;
-    if (aIFEM == null)
+    if (aIFEMs == null)
     {
       return wasSet;
     }
 
-    IFEM existingIFEM = iFEM;
-    iFEM = aIFEM;
-    if (existingIFEM != null && !existingIFEM.equals(aIFEM))
+    IFEMs existingIFEMs = iFEMs;
+    iFEMs = aIFEMs;
+    if (existingIFEMs != null && !existingIFEMs.equals(aIFEMs))
     {
-      existingIFEM.removeUser(this);
+      existingIFEMs.removeUser(this);
     }
-    iFEM.addUser(this);
+    iFEMs.addUser(this);
     wasSet = true;
     return wasSet;
   }
@@ -152,11 +152,11 @@ public abstract class User
   public void delete()
   {
     usersByEmail.remove(getEmail());
-    IFEM placeholderIFEM = iFEM;
-    this.iFEM = null;
-    if(placeholderIFEM != null)
+    IFEMs placeholderIFEMs = iFEMs;
+    this.iFEMs = null;
+    if(placeholderIFEMs != null)
     {
-      placeholderIFEM.removeUser(this);
+      placeholderIFEMs.removeUser(this);
     }
     Person placeholderPerson = person;
     this.person = null;
@@ -172,7 +172,7 @@ public abstract class User
     return super.toString() + "["+
             "email" + ":" + getEmail()+ "," +
             "password" + ":" + getPassword()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "iFEM = "+(getIFEM()!=null?Integer.toHexString(System.identityHashCode(getIFEM())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "iFEMs = "+(getIFEMs()!=null?Integer.toHexString(System.identityHashCode(getIFEMs())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "person = "+(getPerson()!=null?Integer.toHexString(System.identityHashCode(getPerson())):"null");
   }
 }
