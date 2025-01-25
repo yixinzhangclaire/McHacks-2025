@@ -1,127 +1,138 @@
-package model;
 /*PLEASE DO NOT EDIT THIS CODE*/
-
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
+
 
 import java.util.*;
 
-// line 81 "model.ump"
-// line 154 "model.ump"
-public class TreatmentPlan {
+// line 84 "model.ump"
+// line 156 "model.ump"
+public class TreatmentPlan
+{
 
-  // ------------------------
+  //------------------------
   // MEMBER VARIABLES
-  // ------------------------
+  //------------------------
 
-  // TreatmentPlan Attributes
+  //TreatmentPlan Attributes
   private String description;
 
-  // TreatmentPlan Associations
+  //TreatmentPlan Associations
   private List<AssessmentDoc> assessmentDocs;
 
-  // ------------------------
+  //------------------------
   // CONSTRUCTOR
-  // ------------------------
+  //------------------------
 
-  public TreatmentPlan(String aDescription) {
+  public TreatmentPlan(String aDescription)
+  {
     description = aDescription;
     assessmentDocs = new ArrayList<AssessmentDoc>();
   }
 
-  // ------------------------
+  //------------------------
   // INTERFACE
-  // ------------------------
+  //------------------------
 
-  public boolean setDescription(String aDescription) {
+  public boolean setDescription(String aDescription)
+  {
     boolean wasSet = false;
     description = aDescription;
     wasSet = true;
     return wasSet;
   }
 
-  public String getDescription() {
+  public String getDescription()
+  {
     return description;
   }
-
   /* Code from template association_GetMany */
-  public AssessmentDoc getAssessmentDoc(int index) {
+  public AssessmentDoc getAssessmentDoc(int index)
+  {
     AssessmentDoc aAssessmentDoc = assessmentDocs.get(index);
     return aAssessmentDoc;
   }
 
-  public List<AssessmentDoc> getAssessmentDocs() {
+  public List<AssessmentDoc> getAssessmentDocs()
+  {
     List<AssessmentDoc> newAssessmentDocs = Collections.unmodifiableList(assessmentDocs);
     return newAssessmentDocs;
   }
 
-  public int numberOfAssessmentDocs() {
+  public int numberOfAssessmentDocs()
+  {
     int number = assessmentDocs.size();
     return number;
   }
 
-  public boolean hasAssessmentDocs() {
+  public boolean hasAssessmentDocs()
+  {
     boolean has = assessmentDocs.size() > 0;
     return has;
   }
 
-  public int indexOfAssessmentDoc(AssessmentDoc aAssessmentDoc) {
+  public int indexOfAssessmentDoc(AssessmentDoc aAssessmentDoc)
+  {
     int index = assessmentDocs.indexOf(aAssessmentDoc);
     return index;
   }
-
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfAssessmentDocs() {
+  public static int minimumNumberOfAssessmentDocs()
+  {
     return 0;
   }
-
   /* Code from template association_AddManyToManyMethod */
-  public boolean addAssessmentDoc(AssessmentDoc aAssessmentDoc) {
+  public boolean addAssessmentDoc(AssessmentDoc aAssessmentDoc)
+  {
     boolean wasAdded = false;
-    if (assessmentDocs.contains(aAssessmentDoc)) {
-      return false;
-    }
+    if (assessmentDocs.contains(aAssessmentDoc)) { return false; }
     assessmentDocs.add(aAssessmentDoc);
-    if (aAssessmentDoc.indexOfTreatmentPlan(this) != -1) {
+    if (aAssessmentDoc.indexOfTreatmentPlan(this) != -1)
+    {
       wasAdded = true;
-    } else {
+    }
+    else
+    {
       wasAdded = aAssessmentDoc.addTreatmentPlan(this);
-      if (!wasAdded) {
+      if (!wasAdded)
+      {
         assessmentDocs.remove(aAssessmentDoc);
       }
     }
     return wasAdded;
   }
-
   /* Code from template association_RemoveMany */
-  public boolean removeAssessmentDoc(AssessmentDoc aAssessmentDoc) {
+  public boolean removeAssessmentDoc(AssessmentDoc aAssessmentDoc)
+  {
     boolean wasRemoved = false;
-    if (!assessmentDocs.contains(aAssessmentDoc)) {
+    if (!assessmentDocs.contains(aAssessmentDoc))
+    {
       return wasRemoved;
     }
 
     int oldIndex = assessmentDocs.indexOf(aAssessmentDoc);
     assessmentDocs.remove(oldIndex);
-    if (aAssessmentDoc.indexOfTreatmentPlan(this) == -1) {
+    if (aAssessmentDoc.indexOfTreatmentPlan(this) == -1)
+    {
       wasRemoved = true;
-    } else {
+    }
+    else
+    {
       wasRemoved = aAssessmentDoc.removeTreatmentPlan(this);
-      if (!wasRemoved) {
-        assessmentDocs.add(oldIndex, aAssessmentDoc);
+      if (!wasRemoved)
+      {
+        assessmentDocs.add(oldIndex,aAssessmentDoc);
       }
     }
     return wasRemoved;
   }
-
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addAssessmentDocAt(AssessmentDoc aAssessmentDoc, int index) {
+  public boolean addAssessmentDocAt(AssessmentDoc aAssessmentDoc, int index)
+  {  
     boolean wasAdded = false;
-    if (addAssessmentDoc(aAssessmentDoc)) {
-      if (index < 0) {
-        index = 0;
-      }
-      if (index > numberOfAssessmentDocs()) {
-        index = numberOfAssessmentDocs() - 1;
-      }
+    if(addAssessmentDoc(aAssessmentDoc))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfAssessmentDocs()) { index = numberOfAssessmentDocs() - 1; }
       assessmentDocs.remove(aAssessmentDoc);
       assessmentDocs.add(index, aAssessmentDoc);
       wasAdded = true;
@@ -129,34 +140,38 @@ public class TreatmentPlan {
     return wasAdded;
   }
 
-  public boolean addOrMoveAssessmentDocAt(AssessmentDoc aAssessmentDoc, int index) {
+  public boolean addOrMoveAssessmentDocAt(AssessmentDoc aAssessmentDoc, int index)
+  {
     boolean wasAdded = false;
-    if (assessmentDocs.contains(aAssessmentDoc)) {
-      if (index < 0) {
-        index = 0;
-      }
-      if (index > numberOfAssessmentDocs()) {
-        index = numberOfAssessmentDocs() - 1;
-      }
+    if(assessmentDocs.contains(aAssessmentDoc))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfAssessmentDocs()) { index = numberOfAssessmentDocs() - 1; }
       assessmentDocs.remove(aAssessmentDoc);
       assessmentDocs.add(index, aAssessmentDoc);
       wasAdded = true;
-    } else {
+    } 
+    else 
+    {
       wasAdded = addAssessmentDocAt(aAssessmentDoc, index);
     }
     return wasAdded;
   }
 
-  public void delete() {
+  public void delete()
+  {
     ArrayList<AssessmentDoc> copyOfAssessmentDocs = new ArrayList<AssessmentDoc>(assessmentDocs);
     assessmentDocs.clear();
-    for (AssessmentDoc aAssessmentDoc : copyOfAssessmentDocs) {
+    for(AssessmentDoc aAssessmentDoc : copyOfAssessmentDocs)
+    {
       aAssessmentDoc.removeTreatmentPlan(this);
     }
   }
 
-  public String toString() {
-    return super.toString() + "[" +
-        "description" + ":" + getDescription() + "]";
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "description" + ":" + getDescription()+ "]";
   }
 }
