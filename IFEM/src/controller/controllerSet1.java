@@ -9,7 +9,20 @@ public class controllerSet1 {
 
     }
 
-    public static void isCritical() {
+    public static boolean isCritical() {
 
     }
+
+    public static void orderTreatment() {
+
+    }
+
+    public static void orderTests() {
+
+    }
+
+    public static boolean needsFurtherTreatment() {
+
+    }
+
 }

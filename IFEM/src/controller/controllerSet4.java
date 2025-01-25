@@ -4,7 +4,7 @@ import model.Test.InvestigationStatus;
 
 public class controllerSet4 {
 
-    public static String addTest(String aName, String aDescription, InvestigationStatus aStatus) {
+    public static String registerTest(String aName, String aDescription, InvestigationStatus aStatus) {
 
     }
 
@@ -12,6 +12,12 @@ public class controllerSet4 {
 
     }
 
-    public static String 
+    public static boolean updateTestStatus(String aName, InvestigationStatus aStatus) {
+
+    }
+
+    public static String completeTreatment(String ) {
+
+    }
 
 }
