@@ -6,9 +6,15 @@ import java.util.*;
 import java.sql.Time;
 
 // line 2 "model.ump"
-// line 176 "model.ump"
+// line 185 "model.ump"
 public class IFEM
 {
+
+  //------------------------
+  // ENUMERATIONS
+  //------------------------
+
+  public enum Phase { Registered, Triaged, InvestigationPending, Ordered, Pending, Reported }
 
   //------------------------
   // MEMBER VARIABLES
@@ -166,9 +172,9 @@ public class IFEM
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public HospitalStay addHospitalStay(Time aArrivalTime, AssessmentDoc aAssessmentDoc)
+  public HospitalStay addHospitalStay(Time aArrivalTime, Phase aPhase)
   {
-    return new HospitalStay(aArrivalTime, this, aAssessmentDoc);
+    return new HospitalStay(aArrivalTime, aPhase, this);
   }
 
   public boolean addHospitalStay(HospitalStay aHospitalStay)

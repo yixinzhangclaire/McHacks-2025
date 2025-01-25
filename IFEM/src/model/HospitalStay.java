@@ -3,11 +3,19 @@
 
 
 import java.sql.Time;
+import java.util.*;
 
 // line 24 "model.ump"
-// line 108 "model.ump"
+// line 114 "model.ump"
 public class HospitalStay
 {
+
+  //------------------------
+  // ENUMERATIONS
+  //------------------------
+
+  public enum Phase { Registered, Triaged, InvestigationPending, Ordered, Pending, Reported }
+  public enum Triage { Resuscitation, Emergent, Urgent, LessUrgent, NonUrgent }
 
   //------------------------
   // MEMBER VARIABLES
@@ -17,30 +25,30 @@ public class HospitalStay
   private Time arrivalTime;
   private Time avgWaitTime;
   private int queuePosition;
+  private Phase phase;
 
   //HospitalStay Associations
   private IFEM iFEM;
-  private AssessmentDoc assessmentDoc;
+  private List<AssessmentNurse> assessmentNurses;
+  private List<AssessmentDoc> assessmentDocs;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public HospitalStay(Time aArrivalTime, IFEM aIFEM, AssessmentDoc aAssessmentDoc)
+  public HospitalStay(Time aArrivalTime, Phase aPhase, IFEM aIFEM)
   {
     arrivalTime = aArrivalTime;
     avgWaitTime = null;
     queuePosition = 0;
+    phase = aPhase;
     boolean didAddIFEM = setIFEM(aIFEM);
     if (!didAddIFEM)
     {
       throw new RuntimeException("Unable to create hospitalStay due to iFEM. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    boolean didAddAssessmentDoc = setAssessmentDoc(aAssessmentDoc);
-    if (!didAddAssessmentDoc)
-    {
-      throw new RuntimeException("Unable to create hospitalStay due to assessmentDoc. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
+    assessmentNurses = new ArrayList<AssessmentNurse>();
+    assessmentDocs = new ArrayList<AssessmentDoc>();
   }
 
   //------------------------
@@ -71,6 +79,14 @@ public class HospitalStay
     return wasSet;
   }
 
+  public boolean setPhase(Phase aPhase)
+  {
+    boolean wasSet = false;
+    phase = aPhase;
+    wasSet = true;
+    return wasSet;
+  }
+
   public Time getArrivalTime()
   {
     return arrivalTime;
@@ -85,15 +101,75 @@ public class HospitalStay
   {
     return queuePosition;
   }
+
+  public Phase getPhase()
+  {
+    return phase;
+  }
   /* Code from template association_GetOne */
   public IFEM getIFEM()
   {
     return iFEM;
   }
-  /* Code from template association_GetOne */
-  public AssessmentDoc getAssessmentDoc()
+  /* Code from template association_GetMany */
+  public AssessmentNurse getAssessmentNurse(int index)
   {
-    return assessmentDoc;
+    AssessmentNurse aAssessmentNurse = assessmentNurses.get(index);
+    return aAssessmentNurse;
+  }
+
+  public List<AssessmentNurse> getAssessmentNurses()
+  {
+    List<AssessmentNurse> newAssessmentNurses = Collections.unmodifiableList(assessmentNurses);
+    return newAssessmentNurses;
+  }
+
+  public int numberOfAssessmentNurses()
+  {
+    int number = assessmentNurses.size();
+    return number;
+  }
+
+  public boolean hasAssessmentNurses()
+  {
+    boolean has = assessmentNurses.size() > 0;
+    return has;
+  }
+
+  public int indexOfAssessmentNurse(AssessmentNurse aAssessmentNurse)
+  {
+    int index = assessmentNurses.indexOf(aAssessmentNurse);
+    return index;
+  }
+  /* Code from template association_GetMany */
+  public AssessmentDoc getAssessmentDoc(int index)
+  {
+    AssessmentDoc aAssessmentDoc = assessmentDocs.get(index);
+    return aAssessmentDoc;
+  }
+
+  public List<AssessmentDoc> getAssessmentDocs()
+  {
+    List<AssessmentDoc> newAssessmentDocs = Collections.unmodifiableList(assessmentDocs);
+    return newAssessmentDocs;
+  }
+
+  public int numberOfAssessmentDocs()
+  {
+    int number = assessmentDocs.size();
+    return number;
+  }
+
+  public boolean hasAssessmentDocs()
+  {
+    boolean has = assessmentDocs.size() > 0;
+    return has;
+  }
+
+  public int indexOfAssessmentDoc(AssessmentDoc aAssessmentDoc)
+  {
+    int index = assessmentDocs.indexOf(aAssessmentDoc);
+    return index;
   }
   /* Code from template association_SetOneToMany */
   public boolean setIFEM(IFEM aIFEM)
@@ -114,24 +190,149 @@ public class HospitalStay
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setAssessmentDoc(AssessmentDoc aAssessmentDoc)
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfAssessmentNurses()
   {
-    boolean wasSet = false;
-    if (aAssessmentDoc == null)
-    {
-      return wasSet;
-    }
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public AssessmentNurse addAssessmentNurse(Triage aTriage, Nurse aNurse)
+  {
+    return new AssessmentNurse(aTriage, aNurse, this);
+  }
 
-    AssessmentDoc existingAssessmentDoc = assessmentDoc;
-    assessmentDoc = aAssessmentDoc;
-    if (existingAssessmentDoc != null && !existingAssessmentDoc.equals(aAssessmentDoc))
+  public boolean addAssessmentNurse(AssessmentNurse aAssessmentNurse)
+  {
+    boolean wasAdded = false;
+    if (assessmentNurses.contains(aAssessmentNurse)) { return false; }
+    HospitalStay existingHospitalStay = aAssessmentNurse.getHospitalStay();
+    boolean isNewHospitalStay = existingHospitalStay != null && !this.equals(existingHospitalStay);
+    if (isNewHospitalStay)
     {
-      existingAssessmentDoc.removeHospitalStay(this);
+      aAssessmentNurse.setHospitalStay(this);
     }
-    assessmentDoc.addHospitalStay(this);
-    wasSet = true;
-    return wasSet;
+    else
+    {
+      assessmentNurses.add(aAssessmentNurse);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeAssessmentNurse(AssessmentNurse aAssessmentNurse)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aAssessmentNurse, as it must always have a hospitalStay
+    if (!this.equals(aAssessmentNurse.getHospitalStay()))
+    {
+      assessmentNurses.remove(aAssessmentNurse);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addAssessmentNurseAt(AssessmentNurse aAssessmentNurse, int index)
+  {  
+    boolean wasAdded = false;
+    if(addAssessmentNurse(aAssessmentNurse))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfAssessmentNurses()) { index = numberOfAssessmentNurses() - 1; }
+      assessmentNurses.remove(aAssessmentNurse);
+      assessmentNurses.add(index, aAssessmentNurse);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveAssessmentNurseAt(AssessmentNurse aAssessmentNurse, int index)
+  {
+    boolean wasAdded = false;
+    if(assessmentNurses.contains(aAssessmentNurse))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfAssessmentNurses()) { index = numberOfAssessmentNurses() - 1; }
+      assessmentNurses.remove(aAssessmentNurse);
+      assessmentNurses.add(index, aAssessmentNurse);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addAssessmentNurseAt(aAssessmentNurse, index);
+    }
+    return wasAdded;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfAssessmentDocs()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public AssessmentDoc addAssessmentDoc(String aDescription, Doctor aDoctor)
+  {
+    return new AssessmentDoc(aDescription, this, aDoctor);
+  }
+
+  public boolean addAssessmentDoc(AssessmentDoc aAssessmentDoc)
+  {
+    boolean wasAdded = false;
+    if (assessmentDocs.contains(aAssessmentDoc)) { return false; }
+    HospitalStay existingHospitalStay = aAssessmentDoc.getHospitalStay();
+    boolean isNewHospitalStay = existingHospitalStay != null && !this.equals(existingHospitalStay);
+    if (isNewHospitalStay)
+    {
+      aAssessmentDoc.setHospitalStay(this);
+    }
+    else
+    {
+      assessmentDocs.add(aAssessmentDoc);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeAssessmentDoc(AssessmentDoc aAssessmentDoc)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aAssessmentDoc, as it must always have a hospitalStay
+    if (!this.equals(aAssessmentDoc.getHospitalStay()))
+    {
+      assessmentDocs.remove(aAssessmentDoc);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addAssessmentDocAt(AssessmentDoc aAssessmentDoc, int index)
+  {  
+    boolean wasAdded = false;
+    if(addAssessmentDoc(aAssessmentDoc))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfAssessmentDocs()) { index = numberOfAssessmentDocs() - 1; }
+      assessmentDocs.remove(aAssessmentDoc);
+      assessmentDocs.add(index, aAssessmentDoc);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveAssessmentDocAt(AssessmentDoc aAssessmentDoc, int index)
+  {
+    boolean wasAdded = false;
+    if(assessmentDocs.contains(aAssessmentDoc))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfAssessmentDocs()) { index = numberOfAssessmentDocs() - 1; }
+      assessmentDocs.remove(aAssessmentDoc);
+      assessmentDocs.add(index, aAssessmentDoc);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addAssessmentDocAt(aAssessmentDoc, index);
+    }
+    return wasAdded;
   }
 
   public void delete()
@@ -142,11 +343,15 @@ public class HospitalStay
     {
       placeholderIFEM.removeHospitalStay(this);
     }
-    AssessmentDoc placeholderAssessmentDoc = assessmentDoc;
-    this.assessmentDoc = null;
-    if(placeholderAssessmentDoc != null)
+    for(int i=assessmentNurses.size(); i > 0; i--)
     {
-      placeholderAssessmentDoc.removeHospitalStay(this);
+      AssessmentNurse aAssessmentNurse = assessmentNurses.get(i - 1);
+      aAssessmentNurse.delete();
+    }
+    for(int i=assessmentDocs.size(); i > 0; i--)
+    {
+      AssessmentDoc aAssessmentDoc = assessmentDocs.get(i - 1);
+      aAssessmentDoc.delete();
     }
   }
 
@@ -157,7 +362,7 @@ public class HospitalStay
             "queuePosition" + ":" + getQueuePosition()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "arrivalTime" + "=" + (getArrivalTime() != null ? !getArrivalTime().equals(this)  ? getArrivalTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "avgWaitTime" + "=" + (getAvgWaitTime() != null ? !getAvgWaitTime().equals(this)  ? getAvgWaitTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "iFEM = "+(getIFEM()!=null?Integer.toHexString(System.identityHashCode(getIFEM())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "assessmentDoc = "+(getAssessmentDoc()!=null?Integer.toHexString(System.identityHashCode(getAssessmentDoc())):"null");
+            "  " + "phase" + "=" + (getPhase() != null ? !getPhase().equals(this)  ? getPhase().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "iFEM = "+(getIFEM()!=null?Integer.toHexString(System.identityHashCode(getIFEM())):"null");
   }
 }

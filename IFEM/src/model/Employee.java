@@ -3,8 +3,8 @@
 
 
 
-// line 52 "model.ump"
-// line 124 "model.ump"
+// line 56 "model.ump"
+// line 130 "model.ump"
 public abstract class Employee extends User
 {
 
@@ -19,9 +19,9 @@ public abstract class Employee extends User
   // CONSTRUCTOR
   //------------------------
 
-  public Employee(String aEmail, String aPassword, IFEM aIFEM, int aEmployeeID)
+  public Employee(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, int aEmployeeID)
   {
-    super(aEmail, aPassword, aIFEM);
+    super(aEmail, aPassword, aIFEM, aPerson);
     employeeID = aEmployeeID;
   }
 

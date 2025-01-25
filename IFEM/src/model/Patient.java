@@ -4,7 +4,7 @@
 
 
 // line 9 "model.ump"
-// line 103 "model.ump"
+// line 109 "model.ump"
 public class Patient extends User
 {
 
@@ -22,9 +22,9 @@ public class Patient extends User
   // CONSTRUCTOR
   //------------------------
 
-  public Patient(String aEmail, String aPassword, IFEM aIFEM, String aId, MedicalRecord aMedicalRecord)
+  public Patient(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, String aId, MedicalRecord aMedicalRecord)
   {
-    super(aEmail, aPassword, aIFEM);
+    super(aEmail, aPassword, aIFEM, aPerson);
     id = aId;
     if (aMedicalRecord == null || aMedicalRecord.getPatient() != null)
     {
@@ -33,9 +33,9 @@ public class Patient extends User
     medicalRecord = aMedicalRecord;
   }
 
-  public Patient(String aEmail, String aPassword, IFEM aIFEM, String aId)
+  public Patient(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, String aId)
   {
-    super(aEmail, aPassword, aIFEM);
+    super(aEmail, aPassword, aIFEM, aPerson);
     id = aId;
     medicalRecord = new MedicalRecord(this);
   }

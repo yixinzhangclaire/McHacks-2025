@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 84 "model.ump"
-// line 156 "model.ump"
+// line 90 "model.ump"
+// line 163 "model.ump"
 public class TreatmentPlan
 {
 
@@ -80,48 +80,37 @@ public class TreatmentPlan
   {
     return 0;
   }
-  /* Code from template association_AddManyToManyMethod */
+  /* Code from template association_AddManyToOptionalOne */
   public boolean addAssessmentDoc(AssessmentDoc aAssessmentDoc)
   {
     boolean wasAdded = false;
     if (assessmentDocs.contains(aAssessmentDoc)) { return false; }
-    assessmentDocs.add(aAssessmentDoc);
-    if (aAssessmentDoc.indexOfTreatmentPlan(this) != -1)
+    TreatmentPlan existingTreatmentPlan = aAssessmentDoc.getTreatmentPlan();
+    if (existingTreatmentPlan == null)
     {
-      wasAdded = true;
+      aAssessmentDoc.setTreatmentPlan(this);
+    }
+    else if (!this.equals(existingTreatmentPlan))
+    {
+      existingTreatmentPlan.removeAssessmentDoc(aAssessmentDoc);
+      addAssessmentDoc(aAssessmentDoc);
     }
     else
     {
-      wasAdded = aAssessmentDoc.addTreatmentPlan(this);
-      if (!wasAdded)
-      {
-        assessmentDocs.remove(aAssessmentDoc);
-      }
+      assessmentDocs.add(aAssessmentDoc);
     }
+    wasAdded = true;
     return wasAdded;
   }
-  /* Code from template association_RemoveMany */
+
   public boolean removeAssessmentDoc(AssessmentDoc aAssessmentDoc)
   {
     boolean wasRemoved = false;
-    if (!assessmentDocs.contains(aAssessmentDoc))
+    if (assessmentDocs.contains(aAssessmentDoc))
     {
-      return wasRemoved;
-    }
-
-    int oldIndex = assessmentDocs.indexOf(aAssessmentDoc);
-    assessmentDocs.remove(oldIndex);
-    if (aAssessmentDoc.indexOfTreatmentPlan(this) == -1)
-    {
+      assessmentDocs.remove(aAssessmentDoc);
+      aAssessmentDoc.setTreatmentPlan(null);
       wasRemoved = true;
-    }
-    else
-    {
-      wasRemoved = aAssessmentDoc.removeTreatmentPlan(this);
-      if (!wasRemoved)
-      {
-        assessmentDocs.add(oldIndex,aAssessmentDoc);
-      }
     }
     return wasRemoved;
   }
@@ -160,11 +149,9 @@ public class TreatmentPlan
 
   public void delete()
   {
-    ArrayList<AssessmentDoc> copyOfAssessmentDocs = new ArrayList<AssessmentDoc>(assessmentDocs);
-    assessmentDocs.clear();
-    for(AssessmentDoc aAssessmentDoc : copyOfAssessmentDocs)
+    while( !assessmentDocs.isEmpty() )
     {
-      aAssessmentDoc.removeTreatmentPlan(this);
+      assessmentDocs.get(0).setTreatmentPlan(null);
     }
   }
 

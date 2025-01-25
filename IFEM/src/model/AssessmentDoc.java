@@ -3,10 +3,9 @@
 
 
 import java.util.*;
-import java.sql.Time;
 
-// line 67 "model.ump"
-// line 140 "model.ump"
+// line 72 "model.ump"
+// line 147 "model.ump"
 public class AssessmentDoc
 {
 
@@ -14,116 +13,83 @@ public class AssessmentDoc
   // MEMBER VARIABLES
   //------------------------
 
+  //AssessmentDoc Attributes
+  private String description;
+
   //AssessmentDoc Associations
-  private List<HospitalStay> hospitalStaies;
-  private List<Doctor> doctors;
-  private List<TreatmentPlan> treatmentPlans;
+  private HospitalStay hospitalStay;
+  private Doctor doctor;
+  private TreatmentPlan treatmentPlan;
   private List<Test> tests;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public AssessmentDoc()
+  public AssessmentDoc(String aDescription, HospitalStay aHospitalStay, Doctor aDoctor)
   {
-    hospitalStaies = new ArrayList<HospitalStay>();
-    doctors = new ArrayList<Doctor>();
-    treatmentPlans = new ArrayList<TreatmentPlan>();
+    description = aDescription;
+    boolean didAddHospitalStay = setHospitalStay(aHospitalStay);
+    if (!didAddHospitalStay)
+    {
+      throw new RuntimeException("Unable to create assessmentDoc due to hospitalStay. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    if (aDoctor == null || aDoctor.getAssessmentDoc() != null)
+    {
+      throw new RuntimeException("Unable to create AssessmentDoc due to aDoctor. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    doctor = aDoctor;
+    tests = new ArrayList<Test>();
+  }
+
+  public AssessmentDoc(String aDescription, HospitalStay aHospitalStay, String aEmailForDoctor, String aPasswordForDoctor, IFEM aIFEMForDoctor, Person aPersonForDoctor, int aEmployeeIDForDoctor)
+  {
+    description = aDescription;
+    boolean didAddHospitalStay = setHospitalStay(aHospitalStay);
+    if (!didAddHospitalStay)
+    {
+      throw new RuntimeException("Unable to create assessmentDoc due to hospitalStay. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    doctor = new Doctor(aEmailForDoctor, aPasswordForDoctor, aIFEMForDoctor, aPersonForDoctor, aEmployeeIDForDoctor, this);
     tests = new ArrayList<Test>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
-  /* Code from template association_GetMany */
-  public HospitalStay getHospitalStay(int index)
+
+  public boolean setDescription(String aDescription)
   {
-    HospitalStay aHospitalStay = hospitalStaies.get(index);
-    return aHospitalStay;
+    boolean wasSet = false;
+    description = aDescription;
+    wasSet = true;
+    return wasSet;
   }
 
-  public List<HospitalStay> getHospitalStaies()
+  public String getDescription()
   {
-    List<HospitalStay> newHospitalStaies = Collections.unmodifiableList(hospitalStaies);
-    return newHospitalStaies;
+    return description;
+  }
+  /* Code from template association_GetOne */
+  public HospitalStay getHospitalStay()
+  {
+    return hospitalStay;
+  }
+  /* Code from template association_GetOne */
+  public Doctor getDoctor()
+  {
+    return doctor;
+  }
+  /* Code from template association_GetOne */
+  public TreatmentPlan getTreatmentPlan()
+  {
+    return treatmentPlan;
   }
 
-  public int numberOfHospitalStaies()
+  public boolean hasTreatmentPlan()
   {
-    int number = hospitalStaies.size();
-    return number;
-  }
-
-  public boolean hasHospitalStaies()
-  {
-    boolean has = hospitalStaies.size() > 0;
+    boolean has = treatmentPlan != null;
     return has;
-  }
-
-  public int indexOfHospitalStay(HospitalStay aHospitalStay)
-  {
-    int index = hospitalStaies.indexOf(aHospitalStay);
-    return index;
-  }
-  /* Code from template association_GetMany */
-  public Doctor getDoctor(int index)
-  {
-    Doctor aDoctor = doctors.get(index);
-    return aDoctor;
-  }
-
-  public List<Doctor> getDoctors()
-  {
-    List<Doctor> newDoctors = Collections.unmodifiableList(doctors);
-    return newDoctors;
-  }
-
-  public int numberOfDoctors()
-  {
-    int number = doctors.size();
-    return number;
-  }
-
-  public boolean hasDoctors()
-  {
-    boolean has = doctors.size() > 0;
-    return has;
-  }
-
-  public int indexOfDoctor(Doctor aDoctor)
-  {
-    int index = doctors.indexOf(aDoctor);
-    return index;
-  }
-  /* Code from template association_GetMany */
-  public TreatmentPlan getTreatmentPlan(int index)
-  {
-    TreatmentPlan aTreatmentPlan = treatmentPlans.get(index);
-    return aTreatmentPlan;
-  }
-
-  public List<TreatmentPlan> getTreatmentPlans()
-  {
-    List<TreatmentPlan> newTreatmentPlans = Collections.unmodifiableList(treatmentPlans);
-    return newTreatmentPlans;
-  }
-
-  public int numberOfTreatmentPlans()
-  {
-    int number = treatmentPlans.size();
-    return number;
-  }
-
-  public boolean hasTreatmentPlans()
-  {
-    boolean has = treatmentPlans.size() > 0;
-    return has;
-  }
-
-  public int indexOfTreatmentPlan(TreatmentPlan aTreatmentPlan)
-  {
-    int index = treatmentPlans.indexOf(aTreatmentPlan);
-    return index;
   }
   /* Code from template association_GetMany */
   public Test getTest(int index)
@@ -155,241 +121,41 @@ public class AssessmentDoc
     int index = tests.indexOf(aTest);
     return index;
   }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfHospitalStaies()
+  /* Code from template association_SetOneToMany */
+  public boolean setHospitalStay(HospitalStay aHospitalStay)
   {
-    return 0;
-  }
-  /* Code from template association_AddManyToOne */
-  public HospitalStay addHospitalStay(Time aArrivalTime, IFEM aIFEM)
-  {
-    return new HospitalStay(aArrivalTime, aIFEM, this);
-  }
-
-  public boolean addHospitalStay(HospitalStay aHospitalStay)
-  {
-    boolean wasAdded = false;
-    if (hospitalStaies.contains(aHospitalStay)) { return false; }
-    AssessmentDoc existingAssessmentDoc = aHospitalStay.getAssessmentDoc();
-    boolean isNewAssessmentDoc = existingAssessmentDoc != null && !this.equals(existingAssessmentDoc);
-    if (isNewAssessmentDoc)
+    boolean wasSet = false;
+    if (aHospitalStay == null)
     {
-      aHospitalStay.setAssessmentDoc(this);
-    }
-    else
-    {
-      hospitalStaies.add(aHospitalStay);
-    }
-    wasAdded = true;
-    return wasAdded;
-  }
-
-  public boolean removeHospitalStay(HospitalStay aHospitalStay)
-  {
-    boolean wasRemoved = false;
-    //Unable to remove aHospitalStay, as it must always have a assessmentDoc
-    if (!this.equals(aHospitalStay.getAssessmentDoc()))
-    {
-      hospitalStaies.remove(aHospitalStay);
-      wasRemoved = true;
-    }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addHospitalStayAt(HospitalStay aHospitalStay, int index)
-  {  
-    boolean wasAdded = false;
-    if(addHospitalStay(aHospitalStay))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfHospitalStaies()) { index = numberOfHospitalStaies() - 1; }
-      hospitalStaies.remove(aHospitalStay);
-      hospitalStaies.add(index, aHospitalStay);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveHospitalStayAt(HospitalStay aHospitalStay, int index)
-  {
-    boolean wasAdded = false;
-    if(hospitalStaies.contains(aHospitalStay))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfHospitalStaies()) { index = numberOfHospitalStaies() - 1; }
-      hospitalStaies.remove(aHospitalStay);
-      hospitalStaies.add(index, aHospitalStay);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addHospitalStayAt(aHospitalStay, index);
-    }
-    return wasAdded;
-  }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfDoctors()
-  {
-    return 0;
-  }
-  /* Code from template association_AddManyToManyMethod */
-  public boolean addDoctor(Doctor aDoctor)
-  {
-    boolean wasAdded = false;
-    if (doctors.contains(aDoctor)) { return false; }
-    doctors.add(aDoctor);
-    if (aDoctor.indexOfAssessmentDoc(this) != -1)
-    {
-      wasAdded = true;
-    }
-    else
-    {
-      wasAdded = aDoctor.addAssessmentDoc(this);
-      if (!wasAdded)
-      {
-        doctors.remove(aDoctor);
-      }
-    }
-    return wasAdded;
-  }
-  /* Code from template association_RemoveMany */
-  public boolean removeDoctor(Doctor aDoctor)
-  {
-    boolean wasRemoved = false;
-    if (!doctors.contains(aDoctor))
-    {
-      return wasRemoved;
+      return wasSet;
     }
 
-    int oldIndex = doctors.indexOf(aDoctor);
-    doctors.remove(oldIndex);
-    if (aDoctor.indexOfAssessmentDoc(this) == -1)
+    HospitalStay existingHospitalStay = hospitalStay;
+    hospitalStay = aHospitalStay;
+    if (existingHospitalStay != null && !existingHospitalStay.equals(aHospitalStay))
     {
-      wasRemoved = true;
+      existingHospitalStay.removeAssessmentDoc(this);
     }
-    else
-    {
-      wasRemoved = aDoctor.removeAssessmentDoc(this);
-      if (!wasRemoved)
-      {
-        doctors.add(oldIndex,aDoctor);
-      }
-    }
-    return wasRemoved;
+    hospitalStay.addAssessmentDoc(this);
+    wasSet = true;
+    return wasSet;
   }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addDoctorAt(Doctor aDoctor, int index)
-  {  
-    boolean wasAdded = false;
-    if(addDoctor(aDoctor))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfDoctors()) { index = numberOfDoctors() - 1; }
-      doctors.remove(aDoctor);
-      doctors.add(index, aDoctor);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveDoctorAt(Doctor aDoctor, int index)
+  /* Code from template association_SetOptionalOneToMany */
+  public boolean setTreatmentPlan(TreatmentPlan aTreatmentPlan)
   {
-    boolean wasAdded = false;
-    if(doctors.contains(aDoctor))
+    boolean wasSet = false;
+    TreatmentPlan existingTreatmentPlan = treatmentPlan;
+    treatmentPlan = aTreatmentPlan;
+    if (existingTreatmentPlan != null && !existingTreatmentPlan.equals(aTreatmentPlan))
     {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfDoctors()) { index = numberOfDoctors() - 1; }
-      doctors.remove(aDoctor);
-      doctors.add(index, aDoctor);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addDoctorAt(aDoctor, index);
+      existingTreatmentPlan.removeAssessmentDoc(this);
     }
-    return wasAdded;
-  }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfTreatmentPlans()
-  {
-    return 0;
-  }
-  /* Code from template association_AddManyToManyMethod */
-  public boolean addTreatmentPlan(TreatmentPlan aTreatmentPlan)
-  {
-    boolean wasAdded = false;
-    if (treatmentPlans.contains(aTreatmentPlan)) { return false; }
-    treatmentPlans.add(aTreatmentPlan);
-    if (aTreatmentPlan.indexOfAssessmentDoc(this) != -1)
+    if (aTreatmentPlan != null)
     {
-      wasAdded = true;
+      aTreatmentPlan.addAssessmentDoc(this);
     }
-    else
-    {
-      wasAdded = aTreatmentPlan.addAssessmentDoc(this);
-      if (!wasAdded)
-      {
-        treatmentPlans.remove(aTreatmentPlan);
-      }
-    }
-    return wasAdded;
-  }
-  /* Code from template association_RemoveMany */
-  public boolean removeTreatmentPlan(TreatmentPlan aTreatmentPlan)
-  {
-    boolean wasRemoved = false;
-    if (!treatmentPlans.contains(aTreatmentPlan))
-    {
-      return wasRemoved;
-    }
-
-    int oldIndex = treatmentPlans.indexOf(aTreatmentPlan);
-    treatmentPlans.remove(oldIndex);
-    if (aTreatmentPlan.indexOfAssessmentDoc(this) == -1)
-    {
-      wasRemoved = true;
-    }
-    else
-    {
-      wasRemoved = aTreatmentPlan.removeAssessmentDoc(this);
-      if (!wasRemoved)
-      {
-        treatmentPlans.add(oldIndex,aTreatmentPlan);
-      }
-    }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addTreatmentPlanAt(TreatmentPlan aTreatmentPlan, int index)
-  {  
-    boolean wasAdded = false;
-    if(addTreatmentPlan(aTreatmentPlan))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfTreatmentPlans()) { index = numberOfTreatmentPlans() - 1; }
-      treatmentPlans.remove(aTreatmentPlan);
-      treatmentPlans.add(index, aTreatmentPlan);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveTreatmentPlanAt(TreatmentPlan aTreatmentPlan, int index)
-  {
-    boolean wasAdded = false;
-    if(treatmentPlans.contains(aTreatmentPlan))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfTreatmentPlans()) { index = numberOfTreatmentPlans() - 1; }
-      treatmentPlans.remove(aTreatmentPlan);
-      treatmentPlans.add(index, aTreatmentPlan);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addTreatmentPlanAt(aTreatmentPlan, index);
-    }
-    return wasAdded;
+    wasSet = true;
+    return wasSet;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfTests()
@@ -476,22 +242,23 @@ public class AssessmentDoc
 
   public void delete()
   {
-    for(int i=hospitalStaies.size(); i > 0; i--)
+    HospitalStay placeholderHospitalStay = hospitalStay;
+    this.hospitalStay = null;
+    if(placeholderHospitalStay != null)
     {
-      HospitalStay aHospitalStay = hospitalStaies.get(i - 1);
-      aHospitalStay.delete();
+      placeholderHospitalStay.removeAssessmentDoc(this);
     }
-    ArrayList<Doctor> copyOfDoctors = new ArrayList<Doctor>(doctors);
-    doctors.clear();
-    for(Doctor aDoctor : copyOfDoctors)
+    Doctor existingDoctor = doctor;
+    doctor = null;
+    if (existingDoctor != null)
     {
-      aDoctor.removeAssessmentDoc(this);
+      existingDoctor.delete();
     }
-    ArrayList<TreatmentPlan> copyOfTreatmentPlans = new ArrayList<TreatmentPlan>(treatmentPlans);
-    treatmentPlans.clear();
-    for(TreatmentPlan aTreatmentPlan : copyOfTreatmentPlans)
+    if (treatmentPlan != null)
     {
-      aTreatmentPlan.removeAssessmentDoc(this);
+      TreatmentPlan placeholderTreatmentPlan = treatmentPlan;
+      this.treatmentPlan = null;
+      placeholderTreatmentPlan.removeAssessmentDoc(this);
     }
     ArrayList<Test> copyOfTests = new ArrayList<Test>(tests);
     tests.clear();
@@ -501,4 +268,13 @@ public class AssessmentDoc
     }
   }
 
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "description" + ":" + getDescription()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "hospitalStay = "+(getHospitalStay()!=null?Integer.toHexString(System.identityHashCode(getHospitalStay())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "doctor = "+(getDoctor()!=null?Integer.toHexString(System.identityHashCode(getDoctor())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "treatmentPlan = "+(getTreatmentPlan()!=null?Integer.toHexString(System.identityHashCode(getTreatmentPlan())):"null");
+  }
 }

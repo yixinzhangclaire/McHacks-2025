@@ -3,8 +3,8 @@
 
 
 
-// line 56 "model.ump"
-// line 129 "model.ump"
+// line 60 "model.ump"
+// line 135 "model.ump"
 public abstract class User
 {
 
@@ -18,12 +18,13 @@ public abstract class User
 
   //User Associations
   private IFEM iFEM;
+  private Person person;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public User(String aEmail, String aPassword, IFEM aIFEM)
+  public User(String aEmail, String aPassword, IFEM aIFEM, Person aPerson)
   {
     email = aEmail;
     password = aPassword;
@@ -31,6 +32,11 @@ public abstract class User
     if (!didAddIFEM)
     {
       throw new RuntimeException("Unable to create user due to iFEM. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    boolean didAddPerson = setPerson(aPerson);
+    if (!didAddPerson)
+    {
+      throw new RuntimeException("Unable to create user due to person. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -68,6 +74,11 @@ public abstract class User
   {
     return iFEM;
   }
+  /* Code from template association_GetOne */
+  public Person getPerson()
+  {
+    return person;
+  }
   /* Code from template association_SetOneToMany */
   public boolean setIFEM(IFEM aIFEM)
   {
@@ -87,6 +98,25 @@ public abstract class User
     wasSet = true;
     return wasSet;
   }
+  /* Code from template association_SetOneToMany */
+  public boolean setPerson(Person aPerson)
+  {
+    boolean wasSet = false;
+    if (aPerson == null)
+    {
+      return wasSet;
+    }
+
+    Person existingPerson = person;
+    person = aPerson;
+    if (existingPerson != null && !existingPerson.equals(aPerson))
+    {
+      existingPerson.removeUser(this);
+    }
+    person.addUser(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
@@ -96,6 +126,12 @@ public abstract class User
     {
       placeholderIFEM.removeUser(this);
     }
+    Person placeholderPerson = person;
+    this.person = null;
+    if(placeholderPerson != null)
+    {
+      placeholderPerson.removeUser(this);
+    }
   }
 
 
@@ -104,6 +140,7 @@ public abstract class User
     return super.toString() + "["+
             "email" + ":" + getEmail()+ "," +
             "password" + ":" + getPassword()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "iFEM = "+(getIFEM()!=null?Integer.toHexString(System.identityHashCode(getIFEM())):"null");
+            "  " + "iFEM = "+(getIFEM()!=null?Integer.toHexString(System.identityHashCode(getIFEM())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "person = "+(getPerson()!=null?Integer.toHexString(System.identityHashCode(getPerson())):"null");
   }
 }

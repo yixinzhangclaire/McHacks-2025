@@ -2,10 +2,9 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 
-import java.util.*;
 
-// line 38 "model.ump"
-// line 113 "model.ump"
+// line 42 "model.ump"
+// line 119 "model.ump"
 public class Doctor extends Employee
 {
 
@@ -14,141 +13,44 @@ public class Doctor extends Employee
   //------------------------
 
   //Doctor Associations
-  private List<AssessmentDoc> assessmentDocs;
+  private AssessmentDoc assessmentDoc;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Doctor(String aEmail, String aPassword, IFEM aIFEM, int aEmployeeID)
+  public Doctor(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, int aEmployeeID, AssessmentDoc aAssessmentDoc)
   {
-    super(aEmail, aPassword, aIFEM, aEmployeeID);
-    assessmentDocs = new ArrayList<AssessmentDoc>();
+    super(aEmail, aPassword, aIFEM, aPerson, aEmployeeID);
+    if (aAssessmentDoc == null || aAssessmentDoc.getDoctor() != null)
+    {
+      throw new RuntimeException("Unable to create Doctor due to aAssessmentDoc. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    assessmentDoc = aAssessmentDoc;
+  }
+
+  public Doctor(String aEmail, String aPassword, IFEM aIFEM, Person aPerson, int aEmployeeID, String aDescriptionForAssessmentDoc, HospitalStay aHospitalStayForAssessmentDoc)
+  {
+    super(aEmail, aPassword, aIFEM, aPerson, aEmployeeID);
+    assessmentDoc = new AssessmentDoc(aDescriptionForAssessmentDoc, aHospitalStayForAssessmentDoc, this);
   }
 
   //------------------------
   // INTERFACE
   //------------------------
-  /* Code from template association_GetMany */
-  public AssessmentDoc getAssessmentDoc(int index)
+  /* Code from template association_GetOne */
+  public AssessmentDoc getAssessmentDoc()
   {
-    AssessmentDoc aAssessmentDoc = assessmentDocs.get(index);
-    return aAssessmentDoc;
-  }
-
-  public List<AssessmentDoc> getAssessmentDocs()
-  {
-    List<AssessmentDoc> newAssessmentDocs = Collections.unmodifiableList(assessmentDocs);
-    return newAssessmentDocs;
-  }
-
-  public int numberOfAssessmentDocs()
-  {
-    int number = assessmentDocs.size();
-    return number;
-  }
-
-  public boolean hasAssessmentDocs()
-  {
-    boolean has = assessmentDocs.size() > 0;
-    return has;
-  }
-
-  public int indexOfAssessmentDoc(AssessmentDoc aAssessmentDoc)
-  {
-    int index = assessmentDocs.indexOf(aAssessmentDoc);
-    return index;
-  }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfAssessmentDocs()
-  {
-    return 0;
-  }
-  /* Code from template association_AddManyToManyMethod */
-  public boolean addAssessmentDoc(AssessmentDoc aAssessmentDoc)
-  {
-    boolean wasAdded = false;
-    if (assessmentDocs.contains(aAssessmentDoc)) { return false; }
-    assessmentDocs.add(aAssessmentDoc);
-    if (aAssessmentDoc.indexOfDoctor(this) != -1)
-    {
-      wasAdded = true;
-    }
-    else
-    {
-      wasAdded = aAssessmentDoc.addDoctor(this);
-      if (!wasAdded)
-      {
-        assessmentDocs.remove(aAssessmentDoc);
-      }
-    }
-    return wasAdded;
-  }
-  /* Code from template association_RemoveMany */
-  public boolean removeAssessmentDoc(AssessmentDoc aAssessmentDoc)
-  {
-    boolean wasRemoved = false;
-    if (!assessmentDocs.contains(aAssessmentDoc))
-    {
-      return wasRemoved;
-    }
-
-    int oldIndex = assessmentDocs.indexOf(aAssessmentDoc);
-    assessmentDocs.remove(oldIndex);
-    if (aAssessmentDoc.indexOfDoctor(this) == -1)
-    {
-      wasRemoved = true;
-    }
-    else
-    {
-      wasRemoved = aAssessmentDoc.removeDoctor(this);
-      if (!wasRemoved)
-      {
-        assessmentDocs.add(oldIndex,aAssessmentDoc);
-      }
-    }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addAssessmentDocAt(AssessmentDoc aAssessmentDoc, int index)
-  {  
-    boolean wasAdded = false;
-    if(addAssessmentDoc(aAssessmentDoc))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfAssessmentDocs()) { index = numberOfAssessmentDocs() - 1; }
-      assessmentDocs.remove(aAssessmentDoc);
-      assessmentDocs.add(index, aAssessmentDoc);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveAssessmentDocAt(AssessmentDoc aAssessmentDoc, int index)
-  {
-    boolean wasAdded = false;
-    if(assessmentDocs.contains(aAssessmentDoc))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfAssessmentDocs()) { index = numberOfAssessmentDocs() - 1; }
-      assessmentDocs.remove(aAssessmentDoc);
-      assessmentDocs.add(index, aAssessmentDoc);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addAssessmentDocAt(aAssessmentDoc, index);
-    }
-    return wasAdded;
+    return assessmentDoc;
   }
 
   public void delete()
   {
-    ArrayList<AssessmentDoc> copyOfAssessmentDocs = new ArrayList<AssessmentDoc>(assessmentDocs);
-    assessmentDocs.clear();
-    for(AssessmentDoc aAssessmentDoc : copyOfAssessmentDocs)
+    AssessmentDoc existingAssessmentDoc = assessmentDoc;
+    assessmentDoc = null;
+    if (existingAssessmentDoc != null)
     {
-      aAssessmentDoc.removeDoctor(this);
+      existingAssessmentDoc.delete();
     }
     super.delete();
   }

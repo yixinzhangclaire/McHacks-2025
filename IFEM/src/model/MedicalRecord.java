@@ -3,8 +3,8 @@
 
 
 
-// line 89 "model.ump"
-// line 161 "model.ump"
+// line 95 "model.ump"
+// line 168 "model.ump"
 public class MedicalRecord
 {
 
@@ -28,9 +28,9 @@ public class MedicalRecord
     patient = aPatient;
   }
 
-  public MedicalRecord(String aEmailForPatient, String aPasswordForPatient, IFEM aIFEMForPatient, String aIdForPatient)
+  public MedicalRecord(String aEmailForPatient, String aPasswordForPatient, IFEM aIFEMForPatient, Person aPersonForPatient, String aIdForPatient)
   {
-    patient = new Patient(aEmailForPatient, aPasswordForPatient, aIFEMForPatient, aIdForPatient, this);
+    patient = new Patient(aEmailForPatient, aPasswordForPatient, aIFEMForPatient, aPersonForPatient, aIdForPatient, this);
   }
 
   //------------------------
